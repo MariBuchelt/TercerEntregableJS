@@ -6,7 +6,7 @@ let peso;
 let altura;
 let sexo;
 let nivelActividad;
-const personas = [];
+const personas = ['Ana', 'Juan', 'Pedro', 'María', 'Luis'];
 
 function calcularGEB(edad, peso, altura) {
     let geb = 10 * peso + 6.25 * altura - 5 * edad;
