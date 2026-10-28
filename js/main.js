@@ -74,7 +74,7 @@ function gestionarPersonas() {
                 listarPersonas(personas);
                 break;
             case '2':
-                buscado = prompt("¿A quién querés buscar?").toLocaleLowerCase();
+                buscado = prompt("¿A quién querés buscar?");
                 if (personas.includes(buscado)) {
                     posicion = personas.indexOf(buscado);
                     alert(`"${buscado}" está en la lista, en la posición ${posicion}`);
@@ -91,12 +91,12 @@ function gestionarPersonas() {
                 }
                 break;
             case '4':
-                buscado = prompt("¿Qué nombre querés reemplazar?").toLocaleLowerCase();
+                buscado = prompt("¿Qué nombre querés reemplazar?");
                 posicion = personas.indexOf(buscado);
                 if (posicion === -1) {
                     alert(`"${buscado}" no está en la lista.`);
                 } else {
-                    nuevoNombre = prompt("Ingrese el nuevo nombre: ").toLocaleLowerCase();
+                    nuevoNombre = prompt("Ingrese el nuevo nombre: ");
                     personas.splice(posicion, 1, nuevoNombre);
                     alert(`Se reemplazó "${buscado}" por "${nuevoNombre}"`);
                 }
