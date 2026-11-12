@@ -91,19 +91,38 @@ function calcularSegunActividadFisica(gastoEnergeticoTotal, nivelActividad) {
     return gastoEnergeticoTotal * multiplicador;
 }
 
-function listarPersonas(lista) {
-    let mensaje = "Personas cargadas: \n";
-    let numero = 1;
-    for (const persona of lista) {
-        mensaje += `${numero}. ${persona.mostrarDatos()}\n`;
-        numero++;
-    }
+function listarPersonas(lista, titulo = "Personas cargadas:") {
+    let mensaje = `${titulo} \n`;
+    lista.forEach((persona, indice) => {
+        mensaje += `${indice + 1}. ${persona.mostrarDatos()}\n`;
+    });
     mensaje += `Total: ${lista.length} personas`;
     alert(mensaje);
+    console.log(mensaje);
 }
 
-function buscarPosicion(nombreBuscado) {
-    return personas.findIndex((persona) => persona.nombre === nombreBuscado);
+function filtrarPorSexo(sexoBuscado) {
+    return personas.filter((persona) => persona.sexo === sexoBuscado);
+}
+
+function calcularPromedios() {
+    const totales = personas.reduce((acumulador, persona) => {
+        acumulador.edad += persona.edad;
+        acumulador.peso += persona.peso;
+        acumulador.altura += persona.altura;
+        return acumulador;
+    }, { edad: 0, peso: 0, altura: 0 });
+
+    const cantidad = personas.length;
+    return {
+        edad: (totales.edad / cantidad).toFixed(1),
+        peso: (totales.peso / cantidad).toFixed(1),
+        altura: (totales.altura / cantidad).toFixed(1),
+    };
+}
+
+function buscarPersona(nombreBuscado) {
+    return personas.find((persona) => persona.nombre === nombreBuscado);
 }
 
 function pedirDatosPersona() {
@@ -138,22 +157,23 @@ function pedirDatosPersona() {
 function gestionarPersonas() {
     let opcion;
     let buscado;
-    let posicion;
+    let encontrada;
 
     do {
-        opcion = prompt("¿Qué querés hacer con la lista de personas? \n 1. Ver lista \n 2. Buscar persona \n 3. Agregar persona \n 4. Eliminar persona \n 5. Reemplazar persona \n 6. Seguir");
+        opcion = prompt("¿Qué querés hacer con la lista de personas? \n 1. Ver lista \n 2. Buscar persona \n 3. Agregar persona \n 4. Eliminar persona \n 5. Reemplazar persona \n 6. Filtrar personas por sexo \n 7. Ver promedios \n 8. Seguir");
         switch (opcion) {
             case '1':
                 listarPersonas(personas);
                 break;
             case '2':
                 buscado = prompt("¿A quién querés buscar?");
-                posicion = buscarPosicion(buscado);
-                if (posicion === -1) {
+                encontrada = buscarPersona(buscado);
+                if (encontrada === undefined) {
                     alert(`"${buscado}" no está en la lista.`);
                 } else {
-                    alert(`Encontrado en la posición ${posicion}: \n${personas[posicion].mostrarDatos()}`);
+                    alert(`Persona encontrada: \n${encontrada.mostrarDatos()}`);
                 }
+                console.log(`Búsqueda de "${buscado}":`, encontrada);
                 break;
             case '3':
                 const nuevaPersona = pedirDatosPersona();
@@ -162,34 +182,62 @@ function gestionarPersonas() {
                 break;
             case '4':
                 buscado = prompt("¿A quién querés eliminar?");
-                posicion = buscarPosicion(buscado);
-                if (posicion === -1) {
+                encontrada = buscarPersona(buscado);
+                if (encontrada === undefined) {
                     alert(`"${buscado}" no está en la lista.`);
                 } else {
-                    const eliminada = personas.splice(posicion, 1)[0];
+                    const eliminada = personas.splice(personas.indexOf(encontrada), 1)[0];
                     alert(`Se eliminó a: \n${eliminada.mostrarDatos()}`);
+                    console.log(`Se eliminó a ${eliminada.nombre}. Lista actual:`, personas);
                 }
                 break;
             case '5':
                 buscado = prompt("¿A quién querés reemplazar?");
-                posicion = buscarPosicion(buscado);
-                if (posicion === -1) {
+                encontrada = buscarPersona(buscado);
+                if (encontrada === undefined) {
                     alert(`"${buscado}" no está en la lista.`);
                 } else {
                     alert("Ingrese los datos de la nueva persona.");
                     const reemplazo = pedirDatosPersona();
-                    const anterior = personas[posicion];
-                    personas.splice(posicion, 1, reemplazo);
+                    const anterior = encontrada;
+                    personas.splice(personas.indexOf(encontrada), 1, reemplazo);
                     alert(`Se reemplazó a: \n${anterior.mostrarDatos()} \npor: \n${reemplazo.mostrarDatos()}`);
+                    console.log(`Se reemplazó a ${anterior.nombre} por ${reemplazo.nombre}. Lista actual:`, personas);
                 }
                 break;
-            case '6':
+            case '6': {
+                let sexoBuscado = (prompt("¿Qué sexo querés ver? (masculino/femenino)") || "").toLowerCase();
+                while (sexoBuscado !== "masculino" && sexoBuscado !== "femenino") {
+                    alert("Sexo no válido. Ingrese 'masculino' o 'femenino'.");
+                    sexoBuscado = (prompt("¿Qué sexo querés ver? (masculino/femenino)") || "").toLowerCase();
+                }
+                const filtradas = filtrarPorSexo(sexoBuscado);
+                if (filtradas.length === 0) {
+                    alert(`No hay personas de sexo ${sexoBuscado} en la lista.`);
+                } else {
+                    listarPersonas(filtradas, `Personas de sexo ${sexoBuscado}:`);
+                }
+                console.log(`Personas de sexo ${sexoBuscado}:`, filtradas);
+                break;
+            }
+            case '7': {
+                if (personas.length === 0) {
+                    alert("No hay personas cargadas.");
+                    break;
+                }
+                const promedios = calcularPromedios();
+                const mensaje = `Promedios de ${personas.length} personas: \nEdad: ${promedios.edad} años \nPeso: ${promedios.peso} kg \nAltura: ${promedios.altura} cm`;
+                alert(mensaje);
+                console.log(mensaje);
+                break;
+            }
+            case '8':
                 break;
             default:
                 alert("Opción no válida.");
                 break;
         }
-    } while (opcion !== '6');
+    } while (opcion !== '8');
 }
 
 do {
