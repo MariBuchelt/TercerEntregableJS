@@ -1,0 +1,188 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f5f2;
+  color: #333;
+}
+
+.encabezado {
+  background-color: #2e8b57;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.encabezado h1 {
+  margin: 0;
+}
+
+.principal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.panel-formulario {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 280px;
+}
+
+.contenido {
+  flex: 1;
+}
+
+h2 {
+  color: #2e8b57;
+  margin-top: 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.boton {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.boton-primario {
+  background-color: #2e8b57;
+  color: white;
+}
+
+.boton-peligro {
+  background-color: #f8d7da;
+  color: #c0392b;
+}
+
+.errores {
+  color: #c0392b;
+}
+
+.barra {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.mensaje {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  white-space: pre-line;
+}
+
+.exito {
+  background-color: #d4edda;
+  color: #2e8b57;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #c0392b;
+}
+
+.estadisticas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.estadistica {
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.estadistica span {
+  display: block;
+  font-size: 13px;
+  color: #777;
+}
+
+.grilla {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.tarjeta {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  width: 250px;
+  border-top: 5px solid #2e8b57;
+}
+
+.femenino {
+  border-top-color: #d9638a;
+}
+
+.masculino {
+  border-top-color: #3b7dd8;
+}
+
+.tarjeta h3 {
+  margin: 0;
+}
+
+.detalle {
+  color: #777;
+  font-size: 14px;
+}
+
+.resultados {
+  display: flex;
+  gap: 5px;
+}
+
+.resultados p {
+  background-color: #d4edda;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.resultados strong {
+  display: block;
+  font-size: 16px;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.resaltada {
+  background-color: #e6f9ec;
+}
+
+.vacio,
+.aviso {
+  color: #777;
+  text-align: center;
+}
+
+.aviso {
+  font-size: 13px;
+}
