@@ -3,10 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sexto Entregable</title>
+    <title>Calculadora GEB</title>
+    <link rel="stylesheet" href="./css/style.css" />
     <script src="./js/main.js" defer></script>
   </head>
   <body>
-    <h1>Marianna Buchelt</h1>
+    <header class="encabezado">
+      <h1>Calculadora de Gasto Energético</h1>
+      <p>Marianna Buchelt</p>
+    </header>
+    <main class="principal">
+      <aside class="panel-formulario">
+        <h2>Agregar persona</h2>
+        <form id="formPersona">
+          <label>Nombre <input type="text" id="nombre" placeholder="Ej: Ana" /></label>
+          <label>Edad <input type="number" id="edad" min="1" placeholder="años" /></label>
+          <label>Peso (kg) <input type="number" id="peso" min="1" step="0.1" placeholder="kg" /></label>
+          <label>Altura (cm) <input type="number" id="altura" min="1" step="0.1" placeholder="cm" /></label>
+          <label>Sexo
+            <select id="sexo">
+              <option value="">-- Seleccionar --</option>
+              <option value="femenino">Femenino</option>
+              <option value="masculino">Masculino</option>
+            </select>
+          </label>
+          <label>Nivel de actividad física
+            <select id="nivelActividad">
+              <option value="1">Sedentario</option>
+              <option value="2">Ligera</option>
+              <option value="3">Moderada</option>
+              <option value="4">Intensa</option>
+            </select>
+          </label>
+          <button type="submit" class="boton boton-primario">Agregar</button>
+        </form>
+        <ul id="erroresFormulario" class="errores"></ul>
+      </aside>
+      <section class="contenido">
+        <div class="barra">
+          <input type="text" id="buscador" placeholder="Buscar por nombre..." />
+          <select id="filtroSexo">
+            <option value="todos">Todos</option>
+            <option value="femenino">Femenino</option>
+            <option value="masculino">Masculino</option>
+          </select>
+        </div>
+        <div id="mensaje" class="mensaje" hidden></div>
+        <div id="estadisticas" class="estadisticas"></div>
+        <div id="contenedorPersonas" class="grilla"></div>
+        <p class="aviso">
+          Los valores son estimados. Para resultados precisos, consultá a un profesional de la salud o nutricionista.
+        </p>
+      </section>
+    </main>
   </body>
 </html>
