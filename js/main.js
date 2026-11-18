@@ -1,51 +1,44 @@
-let continuar = true;
-const coeficienteProteina = 1.6; 
-let nombre;
-let edad;
-let peso;
-let altura;
-let sexo;
-let nivelActividad;
+const coeficienteProteina = 1.6;
+const nivelesActividad = ["", "Sedentario", "Ligera", "Moderada", "Intensa"];
+let proximoId = 1;
 
 class Persona {
-    constructor(nombre, edad, peso, altura, sexo) {
+    constructor(nombre, edad, peso, altura, sexo, nivelActividad) {
+        this.id = proximoId;
+        proximoId++;
         this.nombre = nombre;
         this.edad = edad;
-        this.peso = peso; 
+        this.peso = peso;
         this.altura = altura;
         this.sexo = sexo;
-    }
-
-    presentarse() {
-        return `Hola, soy ${this.nombre}, tengo ${this.edad} años, mido ${this.altura} cm y mi sexo es ${this.sexo}.`;
-    }
-
-    mostrarDatos() {
-        return `${this.nombre}, edad: ${this.edad}, peso: ${this.peso} kg, altura: ${this.altura} cm, sexo: ${this.sexo}`;
+        this.nivelActividad = nivelActividad;
     }
 
     alturaEnMetros() {
         return this.altura / 100;
     }
-
 }
+ 
+const personas = [
+    new Persona("Ana", 28, 60, 165, "femenino", "2"),
+    new Persona("Juan", 35, 80, 180, "masculino", "3"),
+    new Persona("María", 22, 55, 158, "femenino", "1"),
+    new Persona("Pedro", 40, 90, 175, "masculino", "4"),
+];
 
-const persona1 = new Persona('Ana', 28, 60, 165, 'femenino');
-const persona2 = new Persona('Juan', 35, 80, 180, 'masculino');
-const persona3 = new Persona('María', 22, 55, 158, 'femenino');
-const persona4 = new Persona('Pedro', 40, 90, 175, 'masculino');
-const personas = [persona1, persona2, persona3, persona4];
-
-
-console.log(persona1.presentarse());
-console.log(persona2.presentarse());
-console.log(persona3.presentarse());
-console.log(persona4.presentarse());
-console.log(`${persona1.nombre} mide ${persona1.alturaEnMetros()} metros.`);
-console.log(`${persona2.nombre} mide ${persona2.alturaEnMetros()} metros.`);
-console.log(`${persona3.nombre} mide ${persona3.alturaEnMetros()} metros.`);
-console.log(`${persona4.nombre} mide ${persona4.alturaEnMetros()} metros.`);
-
+const formulario = document.getElementById("formPersona");
+const inputNombre = document.getElementById("nombre");
+const inputEdad = document.getElementById("edad");
+const inputPeso = document.getElementById("peso");
+const inputAltura = document.getElementById("altura");
+const selectSexo = document.getElementById("sexo");
+const selectActividad = document.getElementById("nivelActividad");
+const erroresFormulario = document.getElementById("erroresFormulario");
+const contenedorPersonas = document.getElementById("contenedorPersonas");
+const estadisticas = document.getElementById("estadisticas");
+const mensaje = document.querySelector("#mensaje");
+const buscador = document.querySelector("#buscador");
+const filtroSexo = document.querySelector("#filtroSexo");
 
 function calcularGEB(edad, peso, altura) {
     let geb = 10 * peso + 6.25 * altura - 5 * edad;
@@ -53,56 +46,46 @@ function calcularGEB(edad, peso, altura) {
 }
 
 const calcularGastoEnergeticoTotal = (geb, sexo) => {
-  if(sexo === 'masculino') {
-    console.log("El sexo ingresado es masculino.");
-    return geb + 5;
-  } else {
-    console.log("El sexo ingresado es femenino.");
-    return geb - 161;
-  }
+    if (sexo === "masculino") {
+        return geb + 5;
+    } else {
+        return geb - 161;
+    }
 };
 
-const calcularProteina = (peso, coeficienteProteina) =>  peso * coeficienteProteina;
+
+const calcularProteina = (peso) => peso * coeficienteProteina;
 
 function calcularSegunActividadFisica(gastoEnergeticoTotal, nivelActividad) {
     let multiplicador;
     switch(nivelActividad) {
         case '1':
             multiplicador = 1.2;
-            console.log("Seleccionaste 1");
-            break; 
+            break;
         case '2':
             multiplicador = 1.375;
-            console.log("Seleccionaste 2"); 
             break;
-        case '3':   
+        case '3':
             multiplicador = 1.55;
-            console.log("Seleccionaste 3");
             break;
         case '4':
-            multiplicador = 1.725;   
-            console.log("Seleccionaste 4");
+            multiplicador = 1.725;
             break;
         default:
             multiplicador = 1.2;
-            console.log("Seleccionaste una opción no válida, se aplicará el multiplicador para nivel sedentario (1.2)");
-            break;
     }
     return gastoEnergeticoTotal * multiplicador;
 }
 
-function listarPersonas(lista, titulo = "Personas cargadas:") {
-    let mensaje = `${titulo} \n`;
-    lista.forEach((persona, indice) => {
-        mensaje += `${indice + 1}. ${persona.mostrarDatos()}\n`;
-    });
-    mensaje += `Total: ${lista.length} personas`;
-    alert(mensaje);
-    console.log(mensaje);
+function calcularGET(persona) {
+    const geb = calcularGEB(persona.edad, persona.peso, persona.altura);
+    const gasto = calcularGastoEnergeticoTotal(geb, persona.sexo);
+    return calcularSegunActividadFisica(gasto, persona.nivelActividad);
 }
 
-function filtrarPorSexo(sexoBuscado) {
-    return personas.filter((persona) => persona.sexo === sexoBuscado);
+function calcularIMC(persona) {
+    const metros = persona.alturaEnMetros();
+    return persona.peso / (metros * metros);
 }
 
 function calcularPromedios() {
@@ -121,173 +104,135 @@ function calcularPromedios() {
     };
 }
 
-function buscarPersona(nombreBuscado) {
-    return personas.find((persona) => persona.nombre === nombreBuscado);
+const esTextoValido = (texto) => texto !== "" && isNaN(texto);
+const esNumeroPositivo = (numero) => !isNaN(numero) && numero > 0;
+
+function validarDatos(nombre, edad, peso, altura, sexo) {
+    let errores = "";
+    if (!esTextoValido(nombre)) {
+        errores += "<li>Nombre no válido.</li>";
+    }
+    if (!esNumeroPositivo(edad)) {
+        errores += "<li>Edad no válida.</li>";
+    }
+    if (!esNumeroPositivo(peso)) {
+        errores += "<li>Peso no válido.</li>";
+    }
+    if (!esNumeroPositivo(altura)) {
+        errores += "<li>Altura no válida.</li>";
+    }
+    if (sexo === "") {
+        errores += "<li>Seleccioná un sexo.</li>";
+    }
+    return errores;
 }
 
-function pedirDatosPersona() {
-    let nuevoNombre = prompt("Ingrese el nombre: ");
-    while (nuevoNombre === "" || !isNaN(nuevoNombre)) {
-        alert("Nombre no válido. Ingrese un nombre.");
-        nuevoNombre = prompt("Ingrese el nombre: ");
-    }
-    let nuevaEdad = Number(prompt("Ingrese la edad: "));
-    while (isNaN(nuevaEdad) || nuevaEdad <= 0) {
-        alert("Edad no válida. Ingrese un número.");
-        nuevaEdad = Number(prompt("Ingrese la edad: "));
-    }
-    let nuevoPeso = parseFloat(prompt("Ingrese el peso en kg: "));
-    while (isNaN(nuevoPeso) || nuevoPeso <= 0) {
-        alert("Peso no válido. Ingrese un número.");
-        nuevoPeso = parseFloat(prompt("Ingrese el peso en kg: "));
-    }
-    let nuevaAltura = parseFloat(prompt("Ingrese la altura en cm: "));
-    while (isNaN(nuevaAltura) || nuevaAltura <= 0) {
-        alert("Altura no válida. Ingrese un número.");
-        nuevaAltura = parseFloat(prompt("Ingrese la altura en cm: "));
-    }
-    let nuevoSexo = prompt("Ingrese el sexo (masculino/femenino): ").toLowerCase();
-    while (nuevoSexo !== "masculino" && nuevoSexo !== "femenino") {
-        alert("Sexo no válido. Ingrese 'masculino' o 'femenino'.");
-        nuevoSexo = prompt("Ingrese el sexo (masculino/femenino): ").toLowerCase();
-    }
-    return new Persona(nuevoNombre, nuevaEdad, nuevoPeso, nuevaAltura, nuevoSexo);
+function mostrarMensaje(texto, tipo) {
+    mensaje.innerText = texto;
+    mensaje.className = "mensaje " + tipo;
+    mensaje.hidden = false;
 }
 
-function gestionarPersonas() {
-    let opcion;
-    let buscado;
-    let encontrada;
+function renderizarPersonas(lista) {
+    contenedorPersonas.innerHTML = "";
 
-    do {
-        opcion = prompt("¿Qué querés hacer con la lista de personas? \n 1. Ver lista \n 2. Buscar persona \n 3. Agregar persona \n 4. Eliminar persona \n 5. Reemplazar persona \n 6. Filtrar personas por sexo \n 7. Ver promedios \n 8. Seguir");
-        switch (opcion) {
-            case '1':
-                listarPersonas(personas);
-                break;
-            case '2':
-                buscado = prompt("¿A quién querés buscar?");
-                encontrada = buscarPersona(buscado);
-                if (encontrada === undefined) {
-                    alert(`"${buscado}" no está en la lista.`);
-                } else {
-                    alert(`Persona encontrada: \n${encontrada.mostrarDatos()}`);
-                }
-                console.log(`Búsqueda de "${buscado}":`, encontrada);
-                break;
-            case '3':
-                const nuevaPersona = pedirDatosPersona();
-                personas.push(nuevaPersona);
-                alert(`Se agregó a: \n${nuevaPersona.mostrarDatos()}`);
-                break;
-            case '4':
-                buscado = prompt("¿A quién querés eliminar?");
-                encontrada = buscarPersona(buscado);
-                if (encontrada === undefined) {
-                    alert(`"${buscado}" no está en la lista.`);
-                } else {
-                    const eliminada = personas.splice(personas.indexOf(encontrada), 1)[0];
-                    alert(`Se eliminó a: \n${eliminada.mostrarDatos()}`);
-                    console.log(`Se eliminó a ${eliminada.nombre}. Lista actual:`, personas);
-                }
-                break;
-            case '5':
-                buscado = prompt("¿A quién querés reemplazar?");
-                encontrada = buscarPersona(buscado);
-                if (encontrada === undefined) {
-                    alert(`"${buscado}" no está en la lista.`);
-                } else {
-                    alert("Ingrese los datos de la nueva persona.");
-                    const reemplazo = pedirDatosPersona();
-                    const anterior = encontrada;
-                    personas.splice(personas.indexOf(encontrada), 1, reemplazo);
-                    alert(`Se reemplazó a: \n${anterior.mostrarDatos()} \npor: \n${reemplazo.mostrarDatos()}`);
-                    console.log(`Se reemplazó a ${anterior.nombre} por ${reemplazo.nombre}. Lista actual:`, personas);
-                }
-                break;
-            case '6': {
-                let sexoBuscado = (prompt("¿Qué sexo querés ver? (masculino/femenino)") || "").toLowerCase();
-                while (sexoBuscado !== "masculino" && sexoBuscado !== "femenino") {
-                    alert("Sexo no válido. Ingrese 'masculino' o 'femenino'.");
-                    sexoBuscado = (prompt("¿Qué sexo querés ver? (masculino/femenino)") || "").toLowerCase();
-                }
-                const filtradas = filtrarPorSexo(sexoBuscado);
-                if (filtradas.length === 0) {
-                    alert(`No hay personas de sexo ${sexoBuscado} en la lista.`);
-                } else {
-                    listarPersonas(filtradas, `Personas de sexo ${sexoBuscado}:`);
-                }
-                console.log(`Personas de sexo ${sexoBuscado}:`, filtradas);
-                break;
-            }
-            case '7': {
-                if (personas.length === 0) {
-                    alert("No hay personas cargadas.");
-                    break;
-                }
-                const promedios = calcularPromedios();
-                const mensaje = `Promedios de ${personas.length} personas: \nEdad: ${promedios.edad} años \nPeso: ${promedios.peso} kg \nAltura: ${promedios.altura} cm`;
-                alert(mensaje);
-                console.log(mensaje);
-                break;
-            }
-            case '8':
-                break;
-            default:
-                alert("Opción no válida.");
-                break;
-        }
-    } while (opcion !== '8');
+    if (lista.length === 0) {
+        contenedorPersonas.innerHTML = `<p class="vacio">No hay personas para mostrar.</p>`;
+        return;
+    }
+
+    lista.forEach((persona) => {
+        contenedorPersonas.innerHTML += `
+            <article class="tarjeta ${persona.sexo}" id="persona-${persona.id}">
+                <h3>${persona.nombre}</h3>
+                <p class="detalle">${persona.edad} años - ${persona.peso} kg - ${persona.altura} cm</p>
+                <p class="detalle">Actividad: ${nivelesActividad[persona.nivelActividad]}</p>
+                <div class="resultados">
+                    <p><strong>${calcularGET(persona).toFixed(0)}</strong>kcal/día</p>
+                    <p><strong>${calcularProteina(persona.peso).toFixed(0)} g</strong>proteína</p>
+                    <p><strong>${calcularIMC(persona).toFixed(1)}</strong>IMC</p>
+                </div>
+                <button class="boton boton-peligro boton-eliminar" id="${persona.id}">Eliminar</button>
+            </article>
+        `;
+    });
+
+    const botonesEliminar = document.querySelectorAll(".boton-eliminar");
+    botonesEliminar.forEach((boton) => {
+        boton.addEventListener("click", () => {
+            eliminarPersona(Number(boton.id));
+        });
+    });
 }
 
-do {
-        nombre = prompt("Calculadora de Gasto Energético Basal (GEB)! \n Ingrese tu nombre: ");
-        while (nombre === "" || !isNaN(nombre)) {
-            alert("Nombre no válido. Ingrese un nombre.");
-            nombre = prompt("Ingrese tu nombre: ");
-        }
-        edad = Number(prompt("Calculadora de Gasto Energético Basal (GEB)! \n Ingrese tu edad: "));
-        while (isNaN(edad) || edad <= 0) {
-            alert("Edad no válida. Ingrese un número.");
-            edad = Number(prompt("Ingrese tu edad: "));
-        }
-        peso = parseFloat(prompt("Ingrese tu peso en kg: "));
-        while (isNaN(peso) || peso <= 0) {
-            alert("Peso no válido. Ingrese un número.");
-            peso = parseFloat(prompt("Ingrese tu peso en kg: "));
-        }
-        altura = parseFloat(prompt("Ingrese tu altura en cm: "));
-        while (isNaN(altura) || altura <= 0) {
-            alert("Altura no válida. Ingrese un número.");
-            altura = parseFloat(prompt("Ingrese tu altura en cm: "));
-        }
-        sexo = prompt("Ingrese tu sexo (masculino/femenino): ").toLocaleLowerCase();
-        while (sexo !== "masculino" && sexo !== "femenino") {
-            alert("Sexo no válido. Ingrese 'masculino' o 'femenino'.");
-            sexo = prompt("Ingrese tu sexo (masculino/femenino): ").toLocaleLowerCase();
-        }
-        nivelActividad = prompt("Ingrese tu nivel de actividad física (1-4): \n 1. Sedentario \n 2. Ligera \n 3. Moderada \n 4. Intensa ");
-   
-        let geb = calcularGEB(edad, peso, altura);
-        let gastoEnergeticoAprox = calcularGastoEnergeticoTotal(geb, sexo);
-        let gastoEnergeticoTotal = calcularSegunActividadFisica(gastoEnergeticoAprox, nivelActividad);
-        alert("Gasto Energético Total (GET): " + gastoEnergeticoTotal.toFixed(2) + " kcal/día");
-        
-        let proteina = calcularProteina(peso, coeficienteProteina);
-        alert("Recomendación de proteína: " + proteina.toFixed(2) + " g/día");
-        console.log("Esto solo es un estimado, para obtener resultados más precisos, consulte a un profesional de la salud o nutricionista.");
-
-        const usuario = new Persona(nombre, edad, peso, altura, sexo);
-        console.log(usuario.presentarse());
-
-        personas.push(usuario);
-        gestionarPersonas();
-
-    if (continuar) {
-        let confirmacion = prompt("¿Desea calcular otro gasto energético? (si/no)").toLocaleLowerCase();
-        if (confirmacion == "no") {
-            continuar = false;
-        }
+function renderizarEstadisticas() {
+    if (personas.length === 0) {
+        estadisticas.innerHTML = "";
+        return;
     }
-   
-} while (continuar);
+    const promedios = calcularPromedios();
+    estadisticas.innerHTML = `
+        <div class="estadistica"><span>Personas</span><strong>${personas.length}</strong></div>
+        <div class="estadistica"><span>Edad promedio</span><strong>${promedios.edad}</strong></div>
+        <div class="estadistica"><span>Peso promedio</span><strong>${promedios.peso} kg</strong></div>
+        <div class="estadistica"><span>Altura promedio</span><strong>${promedios.altura} cm</strong></div>
+    `;
+}
+
+function filtrarPersonas() {
+    const texto = buscador.value.toLowerCase();
+    const sexo = filtroSexo.value;
+    return personas.filter((persona) => {
+        const coincideNombre = persona.nombre.toLowerCase().includes(texto);
+        const coincideSexo = sexo === "todos" || persona.sexo === sexo;
+        return coincideNombre && coincideSexo;
+    });
+}
+
+function actualizarVista() {
+    renderizarPersonas(filtrarPersonas());
+    renderizarEstadisticas();
+}
+
+function eliminarPersona(id) {
+    const persona = personas.find((p) => p.id === id);
+    const indice = personas.indexOf(persona);
+    personas.splice(indice, 1);
+    actualizarVista();
+    mostrarMensaje(`Se eliminó a ${persona.nombre}.`, "error");
+}
+
+formulario.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nombre = inputNombre.value.trim();
+    const edad = Number(inputEdad.value);
+    const peso = parseFloat(inputPeso.value);
+    const altura = parseFloat(inputAltura.value);
+    const sexo = selectSexo.value;
+    const nivelActividad = selectActividad.value;
+    const errores = validarDatos(nombre, edad, peso, altura, sexo);
+    erroresFormulario.innerHTML = errores;
+
+    if (errores !== "") {
+        return;
+    }
+
+    const nuevaPersona = new Persona(nombre, edad, peso, altura, sexo, nivelActividad);
+    personas.push(nuevaPersona);
+    formulario.reset();
+    actualizarVista();
+
+    const tarjetaNueva = document.getElementById(`persona-${nuevaPersona.id}`);
+    if (tarjetaNueva) {
+        tarjetaNueva.classList.add("resaltada");
+    }
+    
+    mostrarMensaje(
+        `Se agregó a ${nuevaPersona.nombre}. Gasto Energético Total: ${calcularGET(nuevaPersona).toFixed(0)} kcal/día`,
+        "exito"
+    );
+});
+
+buscador.addEventListener("keyup", actualizarVista);
+filtroSexo.addEventListener("change", actualizarVista);
+actualizarVista();
